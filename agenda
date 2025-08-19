@@ -121,3 +121,4 @@ void listarContatos(Contato agenda[], int total) {
                agenda[i].telefone);
     }
     printf("Total de contatos: %d\n", total);
+}
