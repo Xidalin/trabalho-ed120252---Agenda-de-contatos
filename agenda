@@ -1,0 +1,123 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define max 100
+
+typedef struct {
+    int id;
+    char nome[128];
+    char telefone[16];
+} Contato;
+
+void inserirContato(Contato agenda[], int *total, int *proxId);
+void apagarContato(Contato agenda[], int *total);
+void buscarContato(Contato agenda[], int total);
+void listarContatos(Contato agenda[], int total);
+
+int main() {
+    Contato agenda[max];
+    int total = 0, proxId = 1;
+    int opc;
+
+    do {
+        printf("\nMENU AGENDA\n");
+        printf("1 - Inserir contato\n");
+        printf("2 - Apagar contato\n");
+        printf("3 - Buscar contato\n");
+        printf("4 - Listar contatos\n");
+        printf("0 - Sair\n");
+        printf("Escolha: ");
+        scanf("%d", &opc);
+
+        switch(opc) {
+            case 1: inserirContato(agenda, &total, &proxId); break;
+            case 2: apagarContato(agenda, &total); break;
+            case 3: buscarContato(agenda, total); break;
+            case 4: listarContatos(agenda, total); break;
+            case 0: printf("Saindo...\n"); break;
+            default: printf("Opção inválida!\n");
+        }
+    } while(opc != 0);
+
+    return 0;
+}
+
+void inserirContato(Contato agenda[], int *total, int *proxId) {
+    if(*total >= max) {
+        printf("Agenda cheia!\n");
+        return;
+    }
+    Contato c;
+    c.id = (*proxId)++;
+
+    printf("Digite o nome: ");
+    scanf(" %[^\n]", c.nome); 
+
+    printf("Digite o telefone (ex: 063-99999-9999): ");
+    scanf(" %[^\n]", c.telefone);
+
+    agenda[*total] = c;
+    (*total)++;
+
+    printf("Contato cadastrado com sucesso! ID: %d\n", c.id);
+}
+
+void apagarContato(Contato agenda[], int *total) {
+    int id, pos = -1;
+    printf("Digite o ID do contato a remover: ");
+    scanf("%d", &id);
+
+    for(int i = 0; i < *total; i++) {
+        if(agenda[i].id == id) {
+            pos = i;
+            break;
+        }
+    }
+    if(pos == -1) {
+        printf("Contato não encontrado!\n");
+        return;
+    }
+
+    for(int i = pos; i < *total - 1; i++) {
+        agenda[i] = agenda[i + 1];
+    }
+    (*total)--;
+
+    printf("Contato removido!\n");
+}
+
+void buscarContato(Contato agenda[], int total) {
+    char busca[128];
+    int encontrado = 0;
+
+    printf("Digite o nome ou telefone para buscar: ");
+    scanf(" %[^\n]", busca);
+
+    for(int i = 0; i < total; i++) {
+        if(strstr(agenda[i].nome, busca) || strstr(agenda[i].telefone, busca)) {
+            printf("Encontrado -> [%d] %s - %s\n",
+                   agenda[i].id,
+                   agenda[i].nome,
+                   agenda[i].telefone);
+            encontrado = 1;
+        }
+    }
+    if(!encontrado) {
+        printf("Nenhum contato encontrado.\n");
+    }
+}
+
+void listarContatos(Contato agenda[], int total) {
+    if(total == 0) {
+        printf("Agenda vazia!\n");
+        return;
+    }
+    printf("\nLISTA DE CONTATOS\n");
+    for(int i = 0; i < total; i++) {
+        printf("[%d] Nome: %s | Telefone: %s\n",
+               agenda[i].id,
+               agenda[i].nome,
+               agenda[i].telefone);
+    }
+    printf("Total de contatos: %d\n", total);
